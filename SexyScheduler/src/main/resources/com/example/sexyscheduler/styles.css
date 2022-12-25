@@ -1,0 +1,122 @@
+
+.button {
+    -fx-base: white;
+    -fx-font-family: Teko;
+    -fx-background-color: rgb(114,228,211);
+    -fx-border-width: 3px;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 4px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-image: url("Background.png");
+}
+
+.button:hover {
+    -fx-base: white;
+    -fx-font-family: Teko;
+    -fx-background-color: rgb(68,144,133);
+    -fx-border-width: 3px;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 4px;
+    -fx-border-color: rgb(0,0,0);
+}
+
+#right-arrow{
+    -fx-border-width: 0 0 0 0;
+    -fx-font-family: Teko;
+    -fx-background-color:transparent;
+    -fx-graphic: url("arrow-right.png");
+}
+
+#right-arrow:hover{
+    -fx-border-width: 0 0 0 0;
+    -fx-font-family: Teko;
+    -fx-background-color:transparent;
+    -fx-graphic: url("arrow-right-hover.png");
+}
+
+#left-arrow{
+    -fx-border-width: 0 0 0 0;
+    -fx-font-family: Teko;
+    -fx-background-color:transparent;
+    -fx-graphic: url("arrow-left.png");
+}
+
+#left-arrow:hover{
+    -fx-border-width: 0 0 0 0;
+    -fx-font-family: Teko;
+    -fx-background-color:transparent;
+    -fx-graphic: url("arrow-left-hover.png");
+}
+
+
+.text{
+    -fx-font-family: Teko;
+    -fx-font-size: 16px;
+}
+
+#eventGraphic{
+    -fx-background-image: url("Background.png");
+    -fx-border-color:rgb(0,0,0);
+    -fx-font-size: 7px;
+    -fx-border-width:2px;
+    -fx-border-radius:2px;
+    -fx-background-radius: 3;
+    -fx-background-size: 300px 50px;
+    -fx-alignment: center;
+    -fx-opacity:1;
+}
+
+#calendar{
+    -fx-border-width: 2px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-border-radius:2px;
+    -fx-opacity:1;
+}
+
+#cal-top{
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-border-radius:2px;
+    -fx-background-radius: 3px;
+}
+
+#cal-bot{
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-border-radius:2px;
+    -fx-background-color: rgb(252,238,191);
+    -fx-background-image: url("Background.png")
+}
+
+#day{
+    -fx-border-color:rgb(0,0,0);
+    -fx-border-width:1;
+    -fx-alignment: top-center;
+    -fx-pref-width: 400;
+}
+
+#cust_background{
+    -fx-base: white;
+    -fx-font-family: Teko;
+    -fx-background-color: rgb(252,238,191);
+    -fx-background-image: url("Background.png");
+}
+
+.tab-pane {
+    -fx-font-family: "Roboto Light", serif;
+    -fx-background-color: white;
+    -fx-font-size: 16;
+    -fx-focus-color: grey;
+    -fx-faint-focus-color: transparent;
+}
+
+.radio-button {
+    -fx-font-size: 15;
+}
+
+
+
+.root {
+    -fx-font-family: "Roboto Light", sans-serif;
+    -fx-font-size: medium;
+}
