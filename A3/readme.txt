@@ -1,6 +1,4 @@
-Tyler Boechler, tjb404, 11294509
-Assignment 3
-I completed the majority of the assignment.
+
 
 All tools work properly, all mouse/key event handling works properly.
 

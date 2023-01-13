@@ -1,7 +1,5 @@
 /*
 Tyler Boechler
-tjb404
-11294509
  */
 
 
@@ -13,9 +11,6 @@ copy/cut/paste/undo/redo all works.
 Trainer mode works correctly: switch to trainer with
 CTRL-T or restart trainer
 CTRL-E to editor mode
-
-Performed some implementations of tasks without needing
-to add additional classes (TargetClipboard/TargetCommand).
 
 Rubber band has a few minor bugs when selecting
 inbetween targets.

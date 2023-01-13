@@ -4,7 +4,7 @@ Sexy Scheduler:
 - I was in charge of the calendar's object and data
 representation, event scheduling, automatic scheduling
 and the save file.
-- Add 4 different kinds of events
+- Able to add 4 different kinds of events
 - Left click day to select single day, right click to
 select full week
 - Add event filters for individual schedules
