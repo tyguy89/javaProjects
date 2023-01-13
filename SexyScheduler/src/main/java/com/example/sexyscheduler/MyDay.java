@@ -43,12 +43,11 @@ public class MyDay implements Serializable {
      * @return boolean on success
      */
     public boolean addEvent(EventBase e) {
-        System.out.println(e);
+        //System.out.println(e);
         if (events.size() == 0) {
             //No need to check conflicts
             events.add(e);
             eventCounter++;
-
             if (e instanceof AppointmentEvent) {
                 occupiedTime.add(((AppointmentEvent) e).occupiedTimeSerial);
             }
@@ -84,18 +83,21 @@ public class MyDay implements Serializable {
      * @return boolean on success
      */
     public boolean deleteEvent(EventBase e) {
-        System.out.println((AppointmentEvent) e);
+
         if (events.contains(e)) {
             events.remove(e);
 
+
             if(e instanceof AppointmentEvent) {
-                eventCounter -= ((AppointmentEvent) e).siblings.size();
-                //events.removeAll(((AppointmentEvent) e).siblings);
-                for (AppointmentEvent s: ((AppointmentEvent) e).siblings) {
-                    System.out.println("Hello");
-                    s.day.deleteEvent(s);
-                    s = null;
-                    e = null;
+                occupiedTime.remove(((AppointmentEvent) e).occupiedTimeSerial);
+                if (((AppointmentEvent) e).siblings != null) {
+                    eventCounter -= ((AppointmentEvent) e).siblings.size();
+                    //events.removeAll(((AppointmentEvent) e).siblings);
+                    for (AppointmentEvent s : ((AppointmentEvent) e).siblings) {
+                        s.day.deleteEvent(s);
+                        s = null;
+                        e = null;
+                    }
                 }
             }else if(e instanceof  DeadlineEvent){
                 events.remove(e);
@@ -157,7 +159,6 @@ public class MyDay implements Serializable {
                 "events = " + events +
                 ", value = " + value +
                 ", dayofWeek = " + dayofWeek +
-                ", corresponddow = " + correspondingDayOfWeek +
                 "}";
     }
 

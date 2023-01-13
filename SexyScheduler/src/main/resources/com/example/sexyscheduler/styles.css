@@ -1,26 +1,43 @@
 
-.button {
-    -fx-base: white;
+#cust-button {
     -fx-font-family: Teko;
-    -fx-background-color: rgb(114,228,211);
+    -fx-background-color: rgb(164, 190, 123);
     -fx-border-width: 3px;
     -fx-border-radius: 2px;
-    -fx-background-radius: 4px;
+    -fx-background-insets: 0, 0 0 2 0, 0 0 2 0 ;
     -fx-border-color: rgb(0,0,0);
     -fx-background-image: url("Background.png");
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
+
 }
 
-.button:hover {
-    -fx-base: white;
+#week-day {
     -fx-font-family: Teko;
-    -fx-background-color: rgb(68,144,133);
+    -fx-background-color: rgb(164, 190, 123);
+    -fx-border-width: 3px;
+    -fx-border-radius: 2px;
+    -fx-background-insets: 0, 0 0 2 0, 0 0 2 0 ;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-image: url("Background.png");
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
+
+}
+
+#cust-button:hover {
+    -fx-font-family: Teko;
+    -fx-background-color: rgb(110, 145, 96);
+    -fx-background-insets: 0, 0 0 2 0, 0 0 2 0 ;
     -fx-border-width: 3px;
     -fx-border-radius: 2px;
     -fx-background-radius: 4px;
     -fx-border-color: rgb(0,0,0);
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
+
 }
 
+
 #right-arrow{
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
     -fx-border-width: 0 0 0 0;
     -fx-font-family: Teko;
     -fx-background-color:transparent;
@@ -28,36 +45,44 @@
 }
 
 #right-arrow:hover{
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
     -fx-border-width: 0 0 0 0;
     -fx-font-family: Teko;
     -fx-background-color:transparent;
     -fx-graphic: url("arrow-right-hover.png");
+    -fx-background-size: 20px 20px;
 }
 
 #left-arrow{
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
     -fx-border-width: 0 0 0 0;
     -fx-font-family: Teko;
     -fx-background-color:transparent;
     -fx-graphic: url("arrow-left.png");
+    -fx-background-size: 20px 20px;
 }
 
 #left-arrow:hover{
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
     -fx-border-width: 0 0 0 0;
     -fx-font-family: Teko;
     -fx-background-color:transparent;
     -fx-graphic: url("arrow-left-hover.png");
+    -fx-background-size: 20px 20px;
 }
 
 
 .text{
     -fx-font-family: Teko;
+    -fx-text-fill:rgb(0,0,0);
     -fx-font-size: 16px;
 }
 
 #eventGraphic{
     -fx-background-image: url("Background.png");
+    -fx-font-family: Teko;
+    -fx-font-size: 16px;
     -fx-border-color:rgb(0,0,0);
-    -fx-font-size: 7px;
     -fx-border-width:2px;
     -fx-border-radius:2px;
     -fx-background-radius: 3;
@@ -76,16 +101,58 @@
 #cal-top{
     -fx-border-width: 3px;
     -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(95, 141, 78);
     -fx-border-radius:2px;
     -fx-background-radius: 3px;
 }
 
+#top-containers{
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(95, 141, 78);
+    -fx-border-radius:2px;
+    -fx-background-radius: 3px;
+    -fx-background-image: url("Background.png")
+
+}
+
 #cal-bot{
+    -fx-effect: dropshadow(one-pass-box, rgb(40, 40, 40), 2, 0.4, -2, 2);
     -fx-border-width: 3px;
     -fx-border-color: rgb(0,0,0);
     -fx-border-radius:2px;
-    -fx-background-color: rgb(252,238,191);
+    -fx-background-color: rgb(95, 141, 78);
     -fx-background-image: url("Background.png")
+}
+
+.text-field{
+    -fx-background-insets: 0, 0 0 2 0, 0 0 2 0 ;
+    -fx-text-fill:rgb(0,0,0);
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(164, 190, 123);
+    -fx-prompt-text-fill: rgb(117, 116, 116);
+}
+
+.text-field:hover{
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(255, 255, 255);
+}
+
+.text-field:selected{
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(255, 255, 255);
+}
+
+#event-views{
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-border-radius:2px;
+    -fx-background-color: rgb(229, 217, 182);
+    -fx-background-image: url("Background.png");
 }
 
 #day{
@@ -93,21 +160,29 @@
     -fx-border-width:1;
     -fx-alignment: top-center;
     -fx-pref-width: 400;
+    -fx-font-family: Teko;
+    -fx-font-size: 16px;
 }
 
-#cust_background{
+#cust-background{
     -fx-base: white;
     -fx-font-family: Teko;
-    -fx-background-color: rgb(252,238,191);
-    -fx-background-image: url("Background.png");
+    -fx-background-color: rgb(229, 225, 182);
+
 }
 
 .tab-pane {
+    -fx-border-width: 0 0 0 0;
     -fx-font-family: "Roboto Light", serif;
-    -fx-background-color: white;
+    -fx-background-color: rgb(199, 229, 182);
     -fx-font-size: 16;
-    -fx-focus-color: grey;
-    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane:hover {
+    -fx-border-width: 0 0 0 0;
+    -fx-font-family: "Roboto Light", serif;
+    -fx-background-color: rgb(110, 145, 96);
+    -fx-font-size: 16;
 }
 
 .radio-button {
@@ -115,8 +190,52 @@
 }
 
 
-
 .root {
     -fx-font-family: "Roboto Light", sans-serif;
     -fx-font-size: medium;
+}
+
+.combo-box{
+    -fx-background-insets: 0, 0 0 2 0, 0 0 2 0 ;
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(164, 190, 123);
+}
+
+.combo-box:hover{
+    -fx-background-insets: 0, 0 0 2 0, 0 0 2 0 ;
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(255, 255, 255);
+}
+
+.check-box .box{
+    -fx-background-insets: 0, 0 0 2 0, 0 0 2 0 ;
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(164, 190, 123);
+}
+
+.check-box .box:hover{
+    -fx-font-family: Teko;
+    -fx-background-color: rgb(110, 145, 96);
+    -fx-border-color: rgb(0,0,0);
+}
+
+#tab{
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(229, 225, 182);
+    -fx-border-width: 1;
+}
+
+#tab:hover{
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(110, 145, 96);
+    -fx-border-width: 1;
+}
+
+#tab:selected{
+    -fx-border-color: rgb(0,0,0);
+    -fx-background-color: rgb(110, 145, 96);
+    -fx-border-width: 1;
 }

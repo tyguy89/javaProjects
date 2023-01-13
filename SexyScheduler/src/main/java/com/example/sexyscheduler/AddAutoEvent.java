@@ -15,9 +15,6 @@ public class AddAutoEvent extends CreateEventViewItems{
 
     private HBox spaceDurationHBox;
     private HBox timeDurationHBox;
-    private RadioButton hour;
-    private RadioButton day;
-    private RadioButton none;
 
     public AddAutoEvent(Filter_View filters) {
         super(filters);
@@ -32,10 +29,6 @@ public class AddAutoEvent extends CreateEventViewItems{
         this.timeDurationHBox.setVisible(false);
         this.timeDurationHBox.setAlignment(Pos.CENTER);
 
-        this.hour = hourRadio;
-        //this.day = dayRadio;
-        this.none = noneRadio;
-
         Separator separator1 = new Separator();
         Separator separator2 = new Separator();
         Separator separator3 = new Separator();
@@ -43,65 +36,43 @@ public class AddAutoEvent extends CreateEventViewItems{
         Separator separator5 = new Separator();
 
         VBox vBox1 = new VBox(dayConstraintsLabel, super.startEndDaySelection());
-        vBox1.setSpacing(5);
+        vBox1.setSpacing(2);
         VBox vBox2 = new VBox(timeConstraintsLabel, super.startEndTimeSelection());
-        vBox2.setSpacing(5);
+        vBox2.setSpacing(2);
         VBox vBox4 = new VBox(durationLabel, hoursHBox, minutesHBox);
-        vBox4.setSpacing(5);
+        vBox4.setSpacing(2);
         VBox vBox5 = new VBox(durationChoiceHBox, durationExplainLabel);
         vBox5.setAlignment(Pos.CENTER);
         VBox vBox3 = new VBox(occurrencesHBox, vBox5, this.spaceDurationHBox);
-        vBox3.setSpacing(5);
+        vBox3.setSpacing(2);
 
         VBox autoEventVBox = new VBox(titleHBox, separator1, vBox1, separator2, vBox2,
-                separator3, vBox4, separator5, vBox3, separator4, createEventButton);
+                separator3, vBox4, separator5, vBox3, separator4, tagHBox, createEventButton);
         autoEventVBox.setAlignment(Pos.CENTER);
-        autoEventVBox.setSpacing(8);
-
+        autoEventVBox.setSpacing(4);
+        tagCombo.getSelectionModel().selectFirst();
         root.setCenter(autoEventVBox);
         this.getChildren().add(root);
     }
 
     public void setController(Controller controller) {
 
-        this.hour.setOnAction(e -> {
+        hourRadio.setOnAction(e -> {
             this.spaceDurationHBox.getChildren().clear();
             this.spaceDurationHBox.getChildren().add(hoursDurationHBox);
             HBox.setHgrow(hoursDurationHBox, Priority.ALWAYS);
             this.spaceDurationHBox.setVisible(true);
+
         });
 
-/*        this.day.setOnAction(e -> {
-            this.spaceDurationHBox.getChildren().clear();
-            this.spaceDurationHBox.getChildren().add(daysDurationHBox);
-            HBox.setHgrow(daysDurationHBox, Priority.ALWAYS);
-            this.spaceDurationHBox.setVisible(true);
-        });*/
-
-        this.none.setOnAction(e -> {
+        noneRadio.setOnAction(e -> {
             this.spaceDurationHBox.setVisible(false);
         });
-
-/*        this.durationMinuteRadio.setOnAction(e -> {
-            this.timeDurationHBox.getChildren().clear();
-            this.timeDurationHBox.getChildren().add(minutesHBox);
-            HBox.setHgrow(minutesHBox, Priority.ALWAYS);
-            this.timeDurationHBox.setVisible(true);
-        });
-
-        this.durationHourRadio.setOnAction(e -> {
-            this.timeDurationHBox.getChildren().clear();
-            this.timeDurationHBox.getChildren().add(hoursHBox);
-            HBox.setHgrow(hoursHBox, Priority.ALWAYS);
-            this.timeDurationHBox.setVisible(true);
-        });*/
-
 
         createEventButton.setOnAction(e -> {
             if (titleField.getText() != null && startDayPick.getValue() != null && endDayPick.getValue()
                     != null && startTimeField.getText() != null && endTimeField != null &&
                     this.startDayPick.getValue().isBefore(endDayPick.getValue())) {
-                try {
                     ArrayList<String> start = new ArrayList<>(List.of(startTimeField.getText().split(":")));
                     int startHour = Integer.parseInt(start.get(0));
                     int startMin = Integer.parseInt(start.get(1));
@@ -112,15 +83,27 @@ public class AddAutoEvent extends CreateEventViewItems{
                     if ((!(startHour == endHour && startMin == endMin)) && (0 <= startHour && startHour <= 23 && 0 <= endHour && endHour <= 24 && startHour <= endHour) &&
                             (0 <= startMin && startMin <= 59 && 0 <= endMin && endMin <= 59) && (durationMin < 61)) {
                         if (validSpace(startHour, endHour, startMin, endMin)) {
-                            System.out.println("Add auto event");
+                            String startDayChosen = startDayPick.getValue().toString();
+                            ArrayList<String> startDayString = new ArrayList<>(List.of(startDayChosen.split("-")));
+                            String endDayChosen = endDayPick.getValue().toString();
+                            ArrayList<String> endDayString = new ArrayList<>(List.of(endDayChosen.split("-")));
+                            int days = (int) startDayPick.getValue().datesUntil(endDayPick.getValue()).count() + 1;
+
+                            if (hoursField.getText().equals("")) {
+                                hoursField.setText("0");
+                            }
+
+                            controller.handleAutoEvent(Integer.parseInt(startDayString.get(0)), ModelTranslator.monthsNameByInt.get(Integer.parseInt(startDayString.get(1)) - 1),
+                                    Integer.parseInt(startDayString.get(2)), Integer.parseInt(endDayString.get(0)),
+                                    ModelTranslator.monthsNameByInt.get(Integer.parseInt(endDayString.get(1)) - 1), Integer.parseInt(endDayString.get(2)), days, startTimeField.getText(),
+                                    endTimeField.getText(), Double.parseDouble(hoursField.getText()),
+                                    Integer.parseInt(occurrencesField.getText()),
+                                    hourDurationField.getText() + "," + minuteDurationField.getText(), titleField.getText(),
+                                    "blue", tagCombo.getSelectionModel().getSelectedItem());
                         }
                         else {controller.handleErrorFound();}
                     }
                     else {controller.handleErrorFound();}
-                }
-                catch (Exception exception) {
-                    controller.handleErrorFound();
-                }
             }
             else {controller.handleErrorFound();}
         });
@@ -139,9 +122,8 @@ public class AddAutoEvent extends CreateEventViewItems{
         tagCombo.getSelectionModel().clearSelection();
         occurrencesField.clear();
         occurrencesField.setPromptText("e.g. 4");
-        this.day.setSelected(false);
-        this.hour.setSelected(false);
-        this.none.setSelected(false);
+        hourRadio.setSelected(false);
+        noneRadio.setSelected(false);
         hoursField.clear();
         hoursField.setPromptText("e.g. 5");
         daysField.clear();
@@ -149,23 +131,34 @@ public class AddAutoEvent extends CreateEventViewItems{
     }
 
     public boolean validSpace(int sHour, int eHour, int sMin, int eMin) {
-        if (noneRadio.isSelected()) {
-            System.out.println();
-            return true;
+        int days = (int) startDayPick.getValue().datesUntil(endDayPick.getValue()).count() + 1;
+        double startTime = sHour + (double) sMin/60;
+        double endTime  = eHour + (double) eMin/60;
+        double dayHours = endTime - startTime; // available hours in a day
+        double totalHours = days*dayHours; // total available hours given constraints
+
+        if (hoursField.getText().equals("")) {
+            hoursField.setText("0");
         }
-        else {
-            int days = (int) startDayPick.getValue().datesUntil(endDayPick.getValue()).count() + 1;
-            sHour = sHour + sMin/60;
-            eHour = eHour + eMin/60;
-            int dayHours = eHour - sHour;
-            int totalHours = days*dayHours;
 
-            int requiredTime = Integer.parseInt(occurrencesField.getText()) * (Integer.parseInt(hourDurationField.getText()) +
-                    Integer.parseInt(minuteDurationField.getText())/60);
+/*        if (dayHours < Integer.parseInt(hoursField.getText())) {
+            return false;
+        }*/
 
-            if (requiredTime <= totalHours) {
-                return true;
+        double coolDown = 0;
+        if (hourRadio.isSelected()) {
+            if (Double.parseDouble(hoursField.getText()) > 24) {
+                coolDown = Math.ceil(Double.parseDouble(hoursField.getText()) / 24.0)*24;
+            } else {
+                coolDown = Math.ceil(Double.parseDouble(hoursField.getText()));
             }
+        }
+
+        double requiredTime = Double.parseDouble(occurrencesField.getText()) * (Double.parseDouble(hourDurationField.getText()) +
+                Double.parseDouble(minuteDurationField.getText())/60 + coolDown);
+
+        if (requiredTime <= totalHours) {
+            return true;
         }
         return false;
     }

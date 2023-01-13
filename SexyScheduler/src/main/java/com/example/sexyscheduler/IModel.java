@@ -8,14 +8,14 @@ import java.util.Hashtable;
 
 public class IModel {
     int month = LocalDate.now().getMonthValue() - 1;
-    int day;
+    int day = LocalDate.now().getDayOfMonth();
     int year = 0;
     DayGraphic daySelected = null;
     boolean weekSelected = false;
     MyWeek week = null;
     EventBase selectedEvent;
+    int incr = 0;
 
-    Hashtable<String, String> filterColorByName = new Hashtable<>();
     ArrayList<String> selectedFilters = new ArrayList<String>();
 
     String[] monthNames = {"January","February","March","April","May","June","July","August","September","October","November","December"};
@@ -23,10 +23,6 @@ public class IModel {
     ArrayList<iModelListener> subscribers = new ArrayList<>();
 
     public IModel(){
-        filterColorByName.put("School","rgb(253,170,4)");
-        filterColorByName.put("Work","rgb(225,74,8)");
-        filterColorByName.put("Other","rgb(161,36,86)");
-
     }
 
     public void setSelectedEvent(EventBase selectedEvent) {
@@ -74,6 +70,8 @@ public class IModel {
      * @return the selected day
      */
     public DayGraphic getDaySelected() {
+        if (daySelected != null) {
+        }
         return daySelected;
     }
 
@@ -94,29 +92,36 @@ public class IModel {
      * increments the month by 1
      */
     public void nextMonth(){
-        if(year != 3) {
-            if (month == 11) {
+        if (month == 11) {
+            if (year != 2) {
                 year++;
                 month = 0;
-            } else {
+            }
+        }
+        else {
+            if (!(year == 2 && month == 10)) {
                 month++;
             }
-            notifyMonthChanged();
         }
+
+        notifyMonthChanged();
     }
 
     /**
      * decrements the month by 1
      */
     public void prevMonth(){
-        if(month == 0 ){
-            if(year != 0) {
+        if(month == 0) {
+            if (year != 0) {
                 year--;
+                month = 11;
             }
-            month = 11;
-        }else{
-            month --;
         }
+        else {
+            month--;
+        }
+
+
         notifyMonthChanged();
     }
 
@@ -155,43 +160,12 @@ public class IModel {
         return selectedFilters;
     }
 
-    /**
-     * @param filterName: name of the filter
-     * @param color: the new colour for the filter
-     * updates the filter color to be the param color
-     */
-    public void setFilterColorByName(String filterName, String color){
-        if(filterName != null) {
-            if (!filterColorByName.isEmpty()) {
-                if (!filterColorByName.contains(filterName)) {
-                    filterColorByName.put(filterName, color);
-                }
-            }
-        }
-        notifyColorsChanged();
-
-    }
-
-    /**
-     * @return a hastable of the filter names and their corresponding
-     * colors
-     */
-    public Hashtable<String, String> getFilterColorByName(){
-        return filterColorByName;
-    }
 
     /**
      * tells the views when a filter is selected of unselected
      */
     public void notifyFiltersChanged(){
         subscribers.forEach(iModelListener::filtersChanged);
-    }
-
-    /**
-     * tells the view when a filter has changed its color
-     */
-    public void notifyColorsChanged(){
-        subscribers.forEach(iModelListener::colorsChanged);
     }
 
     /**

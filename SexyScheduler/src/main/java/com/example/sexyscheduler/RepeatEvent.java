@@ -15,10 +15,6 @@ public class RepeatEvent extends CreateEventViewItems {
         super(filters);
 
         BorderPane root = new BorderPane();
-        VBox linked = new VBox(linkedChoiceHBox, unlinkExplainLabel, linkExplainLabel);
-        linked.setAlignment(Pos.CENTER);
-/*        VBox vBox1 = new VBox(dayConstraintsLabel, super.startEndDaySelection());
-        vBox1.setSpacing(5);*/
 
         VBox repeatVBox = new VBox(titleHBox, super.startEndTimeSelection(), tagHBox,
                 super.startEndDaySelection(), repeatHBox, createAllEventsButton);
@@ -40,7 +36,6 @@ public class RepeatEvent extends CreateEventViewItems {
         createAllEventsButton.setOnAction(e -> {
             if (this.titleField.getText() != null && this.startTimeField.getText() != null && this.endTimeField != null
                 && tagCombo.getSelectionModel().getSelectedItem() != null && startDayPick.getValue() != null && endDayPick.getValue() != null) {
-
                 ArrayList<String> startDayString = new ArrayList<>(List.of(startDayPick.getValue().toString().split("-")));
                 ArrayList<String> endDayString = new ArrayList<>(List.of(endDayPick.getValue().toString().split("-")));
 
@@ -55,6 +50,18 @@ public class RepeatEvent extends CreateEventViewItems {
     }
 
     public void clearFields() {
+        titleField.clear();
+        startDayPick.getEditor().clear();
+        startDayPick.setValue(null);
+        endDayPick.getEditor().clear();
+        endDayPick.setValue(null);
+        startTimeField.clear();
+        startTimeField.setPromptText("e.g 11:15");
+        endTimeField.clear();
+        endTimeField.setPromptText("e.g 16:35");
+        tagCombo.getSelectionModel().selectFirst();
+        repeatCombo.getSelectionModel().selectFirst();
+
 
     }
 }

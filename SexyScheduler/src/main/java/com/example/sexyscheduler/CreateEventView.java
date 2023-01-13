@@ -8,8 +8,10 @@ public class CreateEventView extends StackPane implements ModelListener{
 
     private Stage popUp;
     private EventTabsView tabViews;
+    CalendarModel model;
 
-    public CreateEventView(EventTabsView addEventTabs) {
+    public CreateEventView(EventTabsView addEventTabs,CalendarModel model) {
+        this.model = model;
         this.tabViews = addEventTabs;
         this.popUp = new Stage();
         this.popUp.setTitle("Add Event");
@@ -17,16 +19,22 @@ public class CreateEventView extends StackPane implements ModelListener{
         Scene addEventView = new Scene(this.tabViews);
         addEventView.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
         this.popUp.setScene(addEventView);
+        //this.popUp.setOnCloseRequest(e->closethis());
     }
 
     public void modelChanged() {
-        if (!this.popUp.isShowing()) {
+        if(model.addView){
             this.popUp.show();
-        }
-        else {
+        }else{
             this.popUp.hide();
             this.tabViews.clearAddView();
         }
     }
+
+/*    public void closethis(){
+        this.popUp.close();
+        model.addView = false;
+        modelChanged();
+    }*/
 
 }

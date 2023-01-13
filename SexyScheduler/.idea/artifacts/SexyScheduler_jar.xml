@@ -3,15 +3,45 @@
     <output-path>$PROJECT_DIR$/out/artifacts/SexyScheduler_jar</output-path>
     <root id="archive" name="SexyScheduler.jar">
       <element id="module-output" name="SexyScheduler" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/17-ea+11/javafx-base-17-ea+11-win.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-controls/17-ea+11/javafx-controls-17-ea+11-win.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/17-ea+11/javafx-graphics-17-ea+11.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/17-ea+11/javafx-graphics-17-ea+11-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/370/controlsfx-11.1.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/17-ea+11/javafx-base-17-ea+11.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-fxml/17-ea+11/javafx-fxml-17-ea+11.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-fxml/17-ea+11/javafx-fxml-17-ea+11-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/17-ea+11/javafx-graphics-17-ea+11-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/17-ea+11/javafx-base-17-ea+11-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-controls/17-ea+11/javafx-controls-17-ea+11-win.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/17-ea+11/javafx-graphics-17-ea+11.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-controls/17-ea+11/javafx-controls-17-ea+11.jar" path-in-jar="/" />
-      <element id="dir-copy" path="$PROJECT_DIR$/../../../../Program Files/Java/jdk-17.0.1" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/append.bat" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/appInfo.xml" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/AppxReparse.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/breakgen.dll" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/breakgen64.dll" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/brokenPlugins.db" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/elevator.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/format.bat" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/fsnotifier-wsl" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/fsnotifier.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/icons.db" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/idea.bat" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/idea.ico" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/idea.properties" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/idea.svg" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/idea64.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/idea64.exe.vmoptions" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/IdeaWin32.dll" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/IdeaWin64.dll" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/inspect.bat" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/launcher.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/log.xml" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/ltedit.bat" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/msvcp140.dll" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/restarter.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/runnerw.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/Uninstall.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/WinProcessListHelper.exe" />
+      <element id="file-copy" path="$APPLICATION_HOME_DIR$/bin/WinShellIntegrationBridge.dll" />
     </root>
   </artifact>
 </component>

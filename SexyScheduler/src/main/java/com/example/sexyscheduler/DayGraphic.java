@@ -9,19 +9,19 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Random;
 
 public class DayGraphic extends VBox {
-        Label day;
+        Text day;
         ArrayList<EventBase> events = new ArrayList<>();
         ArrayList<EventGraphic> eventGraphics = new ArrayList<>();
         double heightOfItems;
     public DayGraphic(double width, double height, int day){
-        this.day = new Label(""+day);
-        this.heightOfItems = height + this.day.getHeight();
+        this.day = new Text(""+day);
         this.getChildren().add(this.day);
        // this.setMaxSize(width,height);
         this.setPrefSize(Double.MAX_VALUE,Double.MAX_VALUE);
@@ -36,7 +36,7 @@ public class DayGraphic extends VBox {
      * sets background color of day if its been clicked on
      */
     public void setSelected(){
-        this.setStyle("-fx-border-color:rgb(0,0,0);\n-fx-border-width:1.5;\n-fx-background-color:rgb(95,191,176);");
+        this.setStyle("-fx-border-color:rgb(0,0,0);\n-fx-border-width:1.5;\n-fx-background-color:rgb(115,161,98);");
     }
 
     /**
@@ -77,17 +77,12 @@ public class DayGraphic extends VBox {
      * mathc the selected filter
      */
     public void changeFilters(ArrayList<String> tags){
-        if(tags == null){
-            this.getChildren().remove(eventGraphics);
-        }else {
-            for (EventGraphic event : eventGraphics) {
-                if (!tags.contains(event.tag)){
-                    this.getChildren().remove(event);
-                }else{
-                    if(!this.getChildren().contains(event)) {
-                        this.getChildren().add(event);
-                    }
-                }
+        this.getChildren().clear();
+        this.getChildren().add(day);
+
+        for(EventGraphic event: eventGraphics){
+            if(tags.contains(event.tag)){
+                this.getChildren().add(event);
             }
         }
     }

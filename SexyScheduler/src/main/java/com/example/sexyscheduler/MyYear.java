@@ -37,7 +37,7 @@ public class MyYear implements Serializable {
 
 
         for (int i = 0; i < 12; i++) {
-            months[i] = new MyMonth(mt.monthNames[i], i, startDay, leapYear, this);
+            months[i] = new MyMonth(ModelTranslator.monthNames[i], i, startDay, leapYear, this); //add all months
         }
     }
 
@@ -59,7 +59,7 @@ public class MyYear implements Serializable {
         if (i >= 12) {
             throw new IndexOutOfBoundsException("Months are 0-11 in the system sorry");
         }
-        return months[i];
+        return months[ModelTranslator.monthsIntByName.get(ModelTranslator.monthsNameByInt.get(i))];
     }
 
     /**
@@ -68,7 +68,7 @@ public class MyYear implements Serializable {
      * @return the month object
      */
     public MyMonth getMonthByName(String s) {
-        return months[mt.monthsIntByName.get(s)];
+        return months[ModelTranslator.monthsIntByName.get(s)];
     }
 
     @Override

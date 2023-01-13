@@ -10,7 +10,7 @@ import javafx.scene.layout.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateEventViewItems extends StackPane {
+public class CreateEventViewItems extends StackPane implements iModelListener {
 
     HBox titleHBox;
     HBox singleTimeHBox;
@@ -56,8 +56,11 @@ public class CreateEventViewItems extends StackPane {
     Button createAllEventsButton;
     Button createDeadlineButton;
     Button submitChangesButton;
+    Filter_View filters;
 
     public CreateEventViewItems(Filter_View filters) {
+
+        this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
 
         // LABELS
 
@@ -65,6 +68,7 @@ public class CreateEventViewItems extends StackPane {
         Label titleLabel = new Label("Title:  ");
 
         // day labels
+        this.filters = filters;
         this.dayLabel = new Label("Day:  ");
         this.dayConstraintsLabel = new Label("Day Constraints:");
         this.dayConstraintsLabel.setPadding(new Insets(0,0,0,20));
@@ -78,7 +82,6 @@ public class CreateEventViewItems extends StackPane {
         this.endLabel = new Label("End:  ");
         this.timeConstraintsLabel = new Label("Time Constraints:");
         this.timeConstraintsLabel.setPadding(new Insets(0,0,0,20));
-        this.timeConstraintsLabel.setStyle("-fx-font-size: 21");
 
         // occurrences labels
         Label occurrencesLabel = new Label("Occurrences:  ");
@@ -92,10 +95,8 @@ public class CreateEventViewItems extends StackPane {
         // duration labels
         this.durationLabel = new Label("Duration:  ");
         this.durationLabel.setPadding(new Insets(0,0,0,20));
-        this.durationLabel.setStyle("-fx-font-size: 21");
         Label spacerTimeLabel = new Label("Spacer Time:");
         this.durationExplainLabel = new Label("*required amount of time between occurrences of the event");
-        this.durationExplainLabel.setStyle("-fx-font-size: 12");
 
         Label minutesLabel = new Label("Minutes: ");
         Label hourLabel = new Label("Hours:  ");
@@ -104,11 +105,6 @@ public class CreateEventViewItems extends StackPane {
 
         // link labels
         Label linkLabel = new Label("Link:  ");
-        this.unlinkExplainLabel = new Label("*unlinked allows daily events to be customized");
-        this.unlinkExplainLabel.setStyle("-fx-font-size: 12");
-        this.linkExplainLabel = new Label("*linked events create the same event for each day of the week");
-        this.linkExplainLabel.setStyle("-fx-font-size: 12");
-
         // FIELDS
 
         // title HBOX field
@@ -288,6 +284,11 @@ public class CreateEventViewItems extends StackPane {
 
         this.submitChangesButton = new Button("Submit Changes");
         this.submitChangesButton.setAlignment(Pos.CENTER);
+
+        createEventButton.setId("cust-button");
+        submitChangesButton.setId("cust-button");
+        createAllEventsButton.setId("cust-button");
+        createDeadlineButton.setId("cust-button");
     }
 
     public HBox singleDaySelection() {
@@ -327,4 +328,13 @@ public class CreateEventViewItems extends StackPane {
         timeHBox.setAlignment(Pos.CENTER);
         return timeHBox;
     }
+
+    public void monthChanged(){}
+    public void filtersChanged(){
+        ArrayList<String> tags = filters.filterList;
+        ObservableList<String> tagList = FXCollections.observableList(tags);
+        this.tagCombo.setItems(tagList);
+    }
+    public void colorsChanged(){}
+    public void iModelChanged(){}
 }

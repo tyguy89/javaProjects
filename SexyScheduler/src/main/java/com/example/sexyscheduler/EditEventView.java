@@ -11,10 +11,12 @@ import java.util.List;
 
 public class EditEventView extends CreateEventViewItems {
 
+    private CalendarModel model;
     private EventBase previousEvent;
     private MyDay previousDay;
     private MyMonth previousMonth;
     private MyYear previousYear;
+    private boolean hasDeleted = true;
 
     public EditEventView(Filter_View filters) {
         super(filters);
@@ -27,10 +29,16 @@ public class EditEventView extends CreateEventViewItems {
         eventVBox.setAlignment(Pos.CENTER);
         eventVBox.setSpacing(30);
         eventVBox.setPadding(new Insets(20, 20, 20, 20));
-
+        this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+        root.setId("cust-background");
+        eventVBox.setId("cust-background");
+        tagHBox.setId("cust-background");
+        submitChangesButton.setId("cust-button");
         root.setCenter(eventVBox);
         this.getChildren().add(root);
     }
+
+
 
     /**
      * Set controller for the view and handle action events
@@ -40,11 +48,11 @@ public class EditEventView extends CreateEventViewItems {
     public void setController(Controller controller) {
         // when button is the new event to be scheduled is processed - check input and conflicts before scheduling
         submitChangesButton.setOnAction(e -> {
+            //previousDay.deleteEvent(previousEvent);
             // proceed if all necessary fields contain input
             if (this.titleField.getText() != null && this.startDayPick.getValue() != null && this.startTimeField.getText() != null
                     && this.endTimeField.getText() != null && this.tagCombo.getSelectionModel().getSelectedItem() != null) {
                 // obtain the start hour time, start minutes time, end hour time, and end minutes time separately for comparison check
-                try {
                     ArrayList<String> start = new ArrayList<>(List.of(this.startTimeField.getText().split(":")));
                     int startHour = Integer.parseInt(start.get(0));
                     int startMin = Integer.parseInt(start.get(1));
@@ -55,25 +63,20 @@ public class EditEventView extends CreateEventViewItems {
                     if ((!(startHour == endHour && startMin == endMin)) && (0 <= startHour && startHour <= 23 && 0 <= endHour && endHour <= 24 && startHour <= endHour) &&
                             (0 <= startMin && startMin <= 59 && 0 <= endMin && endMin <= 59)) {
                         // attempt to schedule event
-                        try {
                             String dayChosen = startDayPick.getValue().toString();
                             ArrayList<String> dayString = new ArrayList<>(List.of(dayChosen.split("-")));
-                            controller.handleOkayEventButton(titleField.getText(), dayString.get(0), dayString.get(1),
+                            controller.handleSubmitEventButton(titleField.getText(), dayString.get(0), dayString.get(1),
                                     dayString.get(2), startTimeField.getText(), endTimeField.getText(), tagCombo.getSelectionModel().getSelectedItem());
-                        }
+
                         // if a check is unsuccessful display error pop-up
-                        catch (Exception exception) {
-                            if(previousEvent instanceof AppointmentEvent) {
+                            //CalendarModel.restore();
+/*                            if(previousEvent instanceof AppointmentEvent) {
                                 controller.handleOkayEventButton(this.previousEvent.title, Integer.toString(this.previousYear.value),
                                         this.previousMonth.value, Integer.toString(this.previousDay.value), ((AppointmentEvent)this.previousEvent).start, ((AppointmentEvent)this.previousEvent).end, this.previousEvent.tag);
-                            }
-                            controller.handleErrorFound();
-                        }
+                            }*/
+                            //controller.handleErrorFound();
                     } else {
                         controller.handleErrorFound();
-                    }
-                } catch (Exception exception) {
-                    controller.handleErrorFound();
                 }
             } else {
                 controller.handleErrorFound();
@@ -83,6 +86,7 @@ public class EditEventView extends CreateEventViewItems {
 
     public void initiateEdit(EventBase e, MyDay day, MyMonth month, MyYear year) {
         if(e instanceof AppointmentEvent){
+            CalendarModel.save(model);
             this.previousEvent = e;
             this.previousDay = day;
             this.previousMonth = month;
@@ -93,7 +97,6 @@ public class EditEventView extends CreateEventViewItems {
             startTimeField.setText(((AppointmentEvent) e).start);
             endTimeField.setText(((AppointmentEvent) e).end);
             tagCombo.setValue(e.tag);
-            day.deleteEvent(e);
 
         }else if(e instanceof DeadlineEvent){
             this.previousEvent = e;
@@ -105,8 +108,11 @@ public class EditEventView extends CreateEventViewItems {
             startDayPick.setValue(date);
             startTimeField.setText(((DeadlineEvent) e).time);
             tagCombo.setValue(e.tag);
-            day.deleteEvent(e);
         }
+    }
+
+    public void setModel(CalendarModel newModel) {
+        this.model = newModel;
     }
 
 }

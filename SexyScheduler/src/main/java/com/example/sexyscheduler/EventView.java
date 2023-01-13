@@ -19,7 +19,9 @@ public class EventView extends StackPane implements iModelListener {
     CalendarModel model;
     IModel iModel;
 
-    public EventView(CalendarModel model, IModel iModel) {
+    public EventView(CalendarModel model, IModel iModel,Controller controller) {
+        this.iModel = iModel;
+        this.model = model;
         root = new VBox(5);
         root.setAlignment(Pos.TOP_CENTER);
 
@@ -35,6 +37,12 @@ public class EventView extends StackPane implements iModelListener {
         iModel.addSubscriber(weekEventView);
         iModel.addSubscriber(this);
 
+        weekEventView.setController(controller);
+        dayEventView.setController(controller);
+
+        model.addSubscribers(dayEventView);
+        model.addSubscribers(weekEventView);
+
         welcomeText = new Label("Welcome to SexyScheduler (tm)!");
         welcomeText.setId("welcomeText");
         welcomeText.setAlignment(Pos.CENTER);
@@ -42,23 +50,20 @@ public class EventView extends StackPane implements iModelListener {
         weekTitle = new Label();
         weekTitle.setPrefWidth(450);
         weekTitle.setAlignment(Pos.CENTER);
-        weekTitle.setId("cal-bot");
+        weekTitle.setId("week-day");
         weekTitle.setMinHeight(46.5);
         HBox.setHgrow(weekTitle,Priority.ALWAYS);
 
         root.getChildren().addAll(welcomeText, weekTitle);
-        this.setMinSize(Double.MIN_VALUE, Double.MIN_VALUE);
+ /*       this.setMinSize(Double.MIN_VALUE, Double.MIN_VALUE);
         this.setPrefSize(200, 540);
-        this.setMaxSize(Double.MAX_VALUE,Double.MAX_VALUE);
+        this.setMaxSize(Double.MAX_VALUE,Double.MAX_VALUE);*/
+
         this.getChildren().add(root);
-    }
+        iModelChanged();
+        this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
 
-    public void setModel(CalendarModel model) {
-        this.model = model;
-    }
 
-    public void setIModel(IModel iModel) {
-        this.iModel = iModel;
     }
 
     /**
@@ -69,19 +74,18 @@ public class EventView extends StackPane implements iModelListener {
     public void iModelChanged() {
         if (iModel.weekSelected) {
             root.getChildren().clear();
-            if (iModel.week != null) {
-                if (iModel.week.days[0].value > iModel.week.days[6].value) {
-                    weekTitle.setText(model.getMonthByIndices(iModel.getYearIdx(), iModel.getMonthIndx() - 1).getValue()
-                            + " " + iModel.week.days[0].value + " - " + iModel.getMonthName() + " " +
-                            iModel.week.days[6].value);
-                }
-                else if (Math.abs(iModel.week.days[0].value - iModel.week.days[6].value) > 25) {
-                    weekTitle.setText(iModel.getMonthName() + " " + iModel.week.days[0].value + " - " +
-                            model.getMonthByIndices(iModel.getYearIdx(), iModel.getMonthIndx() + 1).getValue() + " " +
-                            iModel.week.days[6].value);
-                }
-                root.getChildren().addAll(weekTitle, weekEventView);
+            if(iModel.week.value == 0){
+                weekTitle.setText(model.getMonthByIndices(iModel.getYearIdx(), iModel.getMonthIndx()-1).getValue()
+                        + " " + iModel.week.days[0].value + " - " + iModel.getMonthName() + " " +
+                        iModel.week.days[6].value);
+            }else {
+                //if (iModel.week != null) {
+                weekTitle.setText(model.getMonthByIndices(iModel.getYearIdx(), iModel.getMonthIndx()).getValue()
+                        + " " + iModel.week.days[0].value + " - " + iModel.getMonthName() + " " +
+                        iModel.week.days[6].value);
             }
+                root.getChildren().addAll(weekTitle, weekEventView);
+            //}
         }
         else {
             root.getChildren().clear();
@@ -101,8 +105,10 @@ public class EventView extends StackPane implements iModelListener {
 
     }
 
-    @Override
-    public void colorsChanged() {
+    public void changeHeight(Number newVal){
+        this.setMaxHeight(newVal.doubleValue());
+        dayEventView.changeHeight(newVal.doubleValue()-weekTitle.getHeight()-60);
+        weekEventView.changeHeight(newVal.doubleValue()-weekTitle.getHeight()-60);
 
     }
 

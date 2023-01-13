@@ -35,9 +35,9 @@ public class DayEventView extends ScrollPane implements iModelListener, ModelLis
         mainColor = Color.rgb(193, 255, 199);
 
         root = new VBox();
-        root.setMinSize(280,1860);
+/*        root.setMinSize(280,1860);
         root.setPrefSize(280,1860);
-        root.setMaxSize(400,1860);
+        root.setMaxSize(400,1860);*/
         VBox.setVgrow(root,Priority.ALWAYS);
         timesAndEventsContainers = new HBox[]{new HBox(), new HBox(), new HBox(), new HBox(), new HBox(), new HBox(), new HBox(),
                 new HBox(), new HBox(), new HBox(), new HBox(), new HBox(), new HBox(), new HBox(), new HBox(), new HBox(), new HBox(),
@@ -62,10 +62,11 @@ public class DayEventView extends ScrollPane implements iModelListener, ModelLis
         this.setContent(root);
         this.setHbarPolicy(ScrollBarPolicy.NEVER);
         this.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        this.setMinSize(Double.MIN_VALUE, Double.MIN_VALUE);
+/*        this.setMinSize(Double.MIN_VALUE, Double.MIN_VALUE);
         this.setPrefSize(200,700);
-        this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        this.setId("cal-bot");
+        this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);*/
+        this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+        this.setId("event-views");
     }
 
     public void setModel(CalendarModel model) {
@@ -80,9 +81,9 @@ public class DayEventView extends ScrollPane implements iModelListener, ModelLis
         this.controller = controller;
     }
 
-/*    public void setEventControllerLink(EventGraphic eventGraphic, Event event, MyDay day) {
+    public void setEventControllerLink(EventGraphic eventGraphic, EventBase event, MyDay day) {
         eventGraphic.setOnMouseClicked(e -> controller.handleEventClicked(event, day));
-    }*/
+    }
 
 
     @Override
@@ -95,67 +96,77 @@ public class DayEventView extends ScrollPane implements iModelListener, ModelLis
             MyDay clickedDay = model.getDayByNames(iModel.getActualYear(), iModel.getMonthName(),Integer.parseInt(iModel.getDaySelected().day.getText()));
 
             // beginning event - to combat duplication issues that happen for some reason
-            //Event previousEvent = new Event("null", "null", "null", 0, "null", "null");
 
             for (EventBase event: selectedDayEvents) {
-               // if (!previousEvent.equals(event)) {
-                    //previousEvent = event;
                     if(event instanceof AppointmentEvent) {
-                        String[] time = ((AppointmentEvent)event).start.split(":");
-                        Hashtable<String, String> colors = iModel.getFilterColorByName();
+                        if (iModel.selectedFilters.contains(event.tag)) {
+                            String[] time = ((AppointmentEvent) event).start.split(":");
+                            Hashtable<String, String> colors = model.getFilterColorByName();
+                            EventGraphic newEventGraphic = new EventGraphic(event, 230, colors.get(event.tag));
+                            this.setEventControllerLink(newEventGraphic, event, clickedDay);
+                            eventVisualContainers[Integer.parseInt(time[0])].getChildren().
+                                    add(newEventGraphic);
+                        }
+                    }
+
+                if(event instanceof DeadlineEvent){
+                    if(iModel.selectedFilters.contains(event.tag)) {
+                        String[] time = ((DeadlineEvent) event).time.split(":");
+                        Hashtable<String, String> colors = model.getFilterColorByName();
                         EventGraphic newEventGraphic = new EventGraphic(event, 230, colors.get(event.tag));
-                        //this.setEventControllerLink(newEventGraphic, event, clickedDay);
-                        eventVisualContainers[Integer.parseInt(time[0])].getChildren().
-                                add(newEventGraphic);
-                    }else if(event instanceof DeadlineEvent){
-                        String[] time = ((DeadlineEvent)event).time.split(":");
-                        Hashtable<String, String> colors = iModel.getFilterColorByName();
-                        EventGraphic newEventGraphic = new EventGraphic(event, 230, colors.get(event.tag));
-                        //this.setEventControllerLink(newEventGraphic, event, clickedDay);
+                        this.setEventControllerLink(newEventGraphic, event, clickedDay);
                         eventVisualContainers[Integer.parseInt(time[0])].getChildren().
                                 add(newEventGraphic);
                     }
-               // }
+                }
+                }
             }
 
         }
-    }
 
     public void monthChanged(){}
-    public void filtersChanged(){}
-    public void colorsChanged(){}
+    public void filtersChanged(){
+        iModelChanged();
+    }
 
     @Override
     public void modelChanged() {
-        //if (model.hasDeletedEvent) {
-        System.out.println("model.hasdeletedEvent condition is true in dayeventview");
+        if (model.hasDeletedEvent) {
         for (VBox container : eventVisualContainers) {
             container.getChildren().clear();
         }
-        MyDay clickedDay = model.getDayByNames(iModel.getActualYear(), iModel.getMonthName(), Integer.parseInt(iModel.getDaySelected().day.getText()));
+        MyDay clickedDay = model.clickedDay;
         // beginning event - to combat duplication issues that happen for some reason
         //Event previousEvent = new Event("null", "null", "null", 0, "null", "null");
-        //selectedDayEvents = model.clickedDay.events;
+            selectedDayEvents = clickedDay.events;
         for (EventBase event: selectedDayEvents) {
-            // if (!previousEvent.equals(event)) {
-            //previousEvent = event;
             if(event instanceof AppointmentEvent) {
-                String[] time = ((AppointmentEvent)event).start.split(":");
-                Hashtable<String, String> colors = iModel.getFilterColorByName();
-                EventGraphic newEventGraphic = new EventGraphic(event, 230, colors.get(event.tag));
-                //this.setEventControllerLink(newEventGraphic, event, clickedDay);
-                eventVisualContainers[Integer.parseInt(time[0])].getChildren().
-                        add(newEventGraphic);
-            }else if(event instanceof DeadlineEvent){
-                String[] time = ((DeadlineEvent)event).time.split(":");
-                Hashtable<String, String> colors = iModel.getFilterColorByName();
-                EventGraphic newEventGraphic = new EventGraphic(event, 230, colors.get(event.tag));
-                //this.setEventControllerLink(newEventGraphic, event, clickedDay);
-                eventVisualContainers[Integer.parseInt(time[0])].getChildren().
-                        add(newEventGraphic);
+                if(iModel.selectedFilters.contains(event.tag)) {
+                    String[] time = ((AppointmentEvent) event).start.split(":");
+                    Hashtable<String, String> colors = model.getFilterColorByName();
+                    EventGraphic newEventGraphic = new EventGraphic(event, 230, colors.get(event.tag));
+                    this.setEventControllerLink(newEventGraphic, event, clickedDay);
+                    eventVisualContainers[Integer.parseInt(time[0])].getChildren().
+                            add(newEventGraphic);
+                }
+            }else if(event instanceof DeadlineEvent) {
+                if (iModel.selectedFilters.contains(event.tag)) {
+                    String[] time = ((DeadlineEvent) event).time.split(":");
+                    Hashtable<String, String> colors = model.getFilterColorByName();
+                    EventGraphic newEventGraphic = new EventGraphic(event, 230, colors.get(event.tag));
+                    this.setEventControllerLink(newEventGraphic, event, clickedDay);
+                    eventVisualContainers[Integer.parseInt(time[0])].getChildren().
+                            add(newEventGraphic);
+                }
             }
-            // }
+            }
         }
 //    }
+    }
+
+    public void changeHeight(double newVal){
+        root.setPrefHeight(newVal);
+        eventVisualContainer.setPrefHeight(newVal);
+
     }
 }

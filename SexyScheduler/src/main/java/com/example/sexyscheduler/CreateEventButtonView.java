@@ -22,6 +22,8 @@ public class CreateEventButtonView extends HBox {
         root.getChildren().add(this.createButton);
         this.getChildren().add(root);
         this.setAlignment(Pos.CENTER);
+        this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+        createButton.setId("cust-button");
     }
 
     public void setController(Controller controller) {

@@ -20,6 +20,7 @@ public class MyWeek implements Serializable {
     public MyDay[] days;
 
     private MyYear containerYear;
+    public MyMonth month;
 
     /**
      * Initiaties a week object
@@ -31,9 +32,7 @@ public class MyWeek implements Serializable {
      */
     public MyWeek(int value, String startday, MyMonth month, boolean leapYear, MyYear ct) {
 
-        if (month.equivalentValue == 10) {
-            System.out.println("yoyo");
-        }
+        this.month = month;
         ModelTranslator mt = ModelTranslator.getInstance(leapYear);
 
         containerYear = ct;

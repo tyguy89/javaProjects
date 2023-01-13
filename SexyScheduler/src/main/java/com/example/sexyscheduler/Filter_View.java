@@ -25,6 +25,7 @@ public class Filter_View extends StackPane {
     ArrayList<String> filterList = new ArrayList<>();
     Button setColor = new Button("Set Color");
     private IModel imodel;
+    private CalendarModel model;
     Button save;
     ComboBox<String> filtersToChoseFrom;
     ObservableList<String> filterNames;
@@ -36,7 +37,9 @@ public class Filter_View extends StackPane {
      * Creates the filter view
      *
      */
-    public Filter_View() {
+    public Filter_View(IModel imodel,CalendarModel model) {
+        this.model = model;
+        this.imodel = imodel;
         filters.setPadding(new Insets(10));
         filters.setVgap(5);
         filters.setHgap(5);
@@ -47,12 +50,30 @@ public class Filter_View extends StackPane {
         clearFilters.setAlignment(Pos.CENTER_RIGHT);
         filters.setAlignment(Pos.CENTER_LEFT);
         filterEditor.setAlignment(Pos.CENTER);
-        boundingBox.getChildren().addAll(filters, clearFilters);
-        this.getChildren().add(boundingBox);
         //filterEditor.getChildren().add(editor);
         editor.setOnAction(e->{
             filterEditorWindow();
             show();});
+
+
+        this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+        filterList = model.filterList;
+        for(String filter: filterList){
+            CheckBox c = new CheckBox(filter);
+            c.setOnAction(e->filterClicked(c));
+            filters.getChildren().add(c);
+        }
+
+        filterNames = FXCollections.observableList(filterList);
+        filtersToChoseFrom = new ComboBox<>();
+        filtersToChoseFrom.setItems(filterNames);
+        filtersToChoseFrom.getSelectionModel().selectFirst();
+
+        boundingBox.getChildren().addAll(filters, clearFilters);
+        this.getChildren().add(boundingBox);
+
+        addButtons();
+
     }
 
     /**
@@ -61,23 +82,34 @@ public class Filter_View extends StackPane {
      */
     private void filterEditorWindow(){
         VBox items = new VBox(10);
-        items.setPrefSize(400,300);
-        items.setSpacing(50);
+        items.setPrefSize(500,400);
+        items.setSpacing(30);
         items.setPadding(new Insets(50));
 
-        Label filter_label = new Label("Enter Filter Name: ");
+        Label filter_label = new Label("Enter Filter to be Added: ");
         TextField textField = new TextField();
-        textField.setMinSize(100, 25);
+
+        Label select = new Label("Select Filter to be Removed: ");
+        ComboBox<String> tagCombo = new ComboBox<>();
+        ArrayList<String> tags = filterList;
+        ObservableList<String> tagList = FXCollections.observableList(tags);
+        tagCombo.setItems(tagList);
+        tagCombo.setPrefWidth(Double.MAX_VALUE);
+        tagCombo.setMaxWidth(200);
+
         HBox hb = new HBox();
         hb.getChildren().addAll(filter_label, textField);
 
+        HBox hb2 = new HBox();
+        hb2.getChildren().addAll(select, tagCombo);
 
         VBox buttons = new VBox(10);
         Button add = new Button("Add Filter");
-        add.setMinSize(100,25);
+        add.setMinSize(100,60);
         Button remove = new Button("Remove Filter");
-        remove.setMinSize(100,25);
-        buttons.getChildren().addAll(add, remove);
+        remove.setId("cust-button");
+        remove.setMinSize(100,60);
+        buttons.getChildren().addAll(hb2, add, remove);
 
         hb.setAlignment(Pos.BASELINE_CENTER);
         buttons.setAlignment(Pos.BASELINE_CENTER);
@@ -85,32 +117,36 @@ public class Filter_View extends StackPane {
         items.getChildren().addAll(hb,buttons);
 
         this.popUp = new Stage();
-        this.popUp.setMaxWidth(400);
-        this.popUp.setMaxHeight(300);
+        this.popUp.setMaxWidth(500);
+        this.popUp.setMaxHeight(400);
         this.popUp.setTitle("Filter Editor");
         Scene filter_edits = new Scene(items);
+        filter_edits.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+        items.setId("cust-background");
+        add.setId("cust-button");
+        remove.setId("cust-button");
         this.popUp.setScene(filter_edits);
 
 
         // add the add_filter and remove_filter events to the respective buttons.
         add.setOnAction(e->{
-            if (textField.getText() != null) {
+            if (!Objects.equals(textField.getText(), "")) {
+                textField.getText();
                 String filter = textField.getText();
                 this.add_filter(filter);
-                //TODO: Has to update the tags in the create event view
+                model.notifySubscribers();
             }
             show();
         });
 
         remove.setOnAction(e->{
-            if (textField.getText() != null) {
-                String filter = textField.getText();
-                this.remove_filter(filter);
-                //TODO: Has to update the tags in the create event view
-            }
+            String filter = tagCombo.getValue();
+            this.remove_filter(filter);
+            model.notifySubscribers();
             show();
         });
     }
+
 
     /**
      * Adds a filter to the "Filters" view and creates the "Unselect All"
@@ -134,48 +170,51 @@ public class Filter_View extends StackPane {
         filterNames = FXCollections.observableList(filterList);
         filtersToChoseFrom = new ComboBox<>();
         filtersToChoseFrom.setItems(filterNames);
+        model.notifySubscribers();
 
-        EventHandler<ActionEvent> checkbox_event = new EventHandler<ActionEvent>() {
+        c.setOnAction(e->filterClicked(c));
 
-            public void handle(ActionEvent e)
-            {
-                if (c.isSelected()) {
-                    imodel.addSelectedFilter(c.getText());
-                }
-                else if (!c.isSelected()) {
-                    imodel.removeSelectedFilter(c.getText());
-                }
-            }
-        };
-        c.setOnAction(checkbox_event);
+    }
 
-
-        // creates the "Unselect All" and "Select All" button only once, when the first filter is added
-        if (filters.getChildren().size() == 1) {
-
-            Button allSelector = new Button();
-            allSelector.setText("Select All");
-            Button deSelector = new Button();
-            deSelector.setText("Unselect All");
-            filterHeight = (int) boundingBox.getHeight();
-            VBox editBox = new VBox(5);
-            VBox selectBox = new VBox(5);
-            HBox buttonBox = new HBox(5);
-            editBox.getChildren().addAll(setColor,editor);
-            selectBox.getChildren().addAll(allSelector,deSelector);
-            buttonBox.getChildren().addAll(editBox,selectBox);
-            setColor.setPrefWidth(110);
-            editor.setPrefWidth(110);
-            allSelector.setPrefWidth(110);
-            deSelector.setPrefWidth(110);
-            clearFilters.getChildren().addAll(buttonBox);
-            allSelector.setOnAction(e->addAll());
-            deSelector.setOnAction(e->removeAll());
-            setColor.setOnAction(e->{
-                colourSelectPopUp();
-                show();});
-
+    public void filterClicked(CheckBox c){
+        if (c.isSelected()) {
+            imodel.addSelectedFilter(c.getText());
         }
+        else if (!c.isSelected()) {
+            imodel.removeSelectedFilter(c.getText());
+        }
+    }
+
+    public void addButtons(){
+        Button allSelector = new Button();
+        allSelector.setOnAction(e->addAll());
+        allSelector.setText("Select All");
+        Button deSelector = new Button();
+        deSelector.setOnAction(e->removeAll());
+        deSelector.setText("Unselect All");
+        allSelector.setId("cust-button");
+        deSelector.setId("cust-button");
+
+        setColor.setId("cust-button");
+        editor.setId("cust-button");
+
+        filterHeight = (int) boundingBox.getHeight();
+        VBox editBox = new VBox(5);
+        VBox selectBox = new VBox(5);
+        HBox buttonBox = new HBox(5);
+        editBox.getChildren().addAll(setColor,editor);
+        selectBox.getChildren().addAll(allSelector,deSelector);
+        buttonBox.getChildren().addAll(editBox,selectBox);
+        setColor.setPrefWidth(110);
+        editor.setPrefWidth(110);
+        allSelector.setPrefWidth(110);
+        deSelector.setPrefWidth(110);
+        clearFilters.getChildren().addAll(buttonBox);
+        allSelector.setOnAction(e->addAll());
+        deSelector.setOnAction(e->removeAll());
+        setColor.setOnAction(e->{
+            colourSelectPopUp();
+            show();});
     }
 
     /**
@@ -206,10 +245,7 @@ public class Filter_View extends StackPane {
                 change.setSelected(false);
             }
         }
-
-        for (int i = 0; i < allFilters.size(); i++) {
-            allFilters.remove(i);
-        }
+        allFilters.clear();
         imodel.notifyFiltersChanged();
     }
 
@@ -217,24 +253,35 @@ public class Filter_View extends StackPane {
      * creates the popup pane for when set color is clicked
      */
     public void colourSelectPopUp(){
-        BorderPane colorSelectRoot = new BorderPane();
-        colorSelectRoot.setPrefSize(100,150);
         VBox items = new VBox(10);
-        items.setPrefSize(100,150);
-        ColorPicker colorPicker = new ColorPicker(Color.BLACK);
+        items.setPrefSize(300,400);
+        items.setSpacing(15);
+        items.setPadding(new Insets(50));
+
+        VBox buttons = new VBox(10);
         save = new Button("save");
-        save.setMinSize(100,25);
-        filtersToChoseFrom.setMinSize(100,25);
-        colorPicker.setMinSize(100,25);
+        save.setMinSize(100,60);
+        ColorPicker colorPicker = new ColorPicker(Color.BLACK);
+        save.setId("cust-button");
+        colorPicker.setId("cust-button");
+        colorPicker.setMinSize(100,60);
+        buttons.getChildren().addAll(save, colorPicker);
+
+
+
+        filtersToChoseFrom.setMinSize(100,60);
+        items.setAlignment(Pos.BASELINE_CENTER);
+        buttons.setAlignment(Pos.BASELINE_CENTER);
         items.getChildren().addAll(filtersToChoseFrom,colorPicker,save);
-        colorSelectRoot.getChildren().add(items);
 
         this.popUp = new Stage();
-        this.popUp.setMaxWidth(100);
-        this.popUp.setMaxHeight(150);
+        this.popUp.setMaxWidth(300);
+        this.popUp.setMaxHeight(400);
         this.popUp.setTitle("Color Picker");
-        Scene colors = new Scene(colorSelectRoot);
+        Scene colors = new Scene(items);
         this.popUp.setScene(colors);
+        colors.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+        items.setId("cust-background");
 
         save.setOnAction(e->{
             String colorString = "rgb("+(int)(colorPicker.getValue().getRed()*255)+","+(int)(colorPicker.getValue().getGreen()*255)+","+(int)(colorPicker.getValue().getBlue()*255)+")";
@@ -262,7 +309,7 @@ public class Filter_View extends StackPane {
      * updates the color for the corresponding filter in the i-model
      */
     public void sendColorIModel(String filterName, String color){
-        imodel.setFilterColorByName(filterName,color);
+        model.setFilterColorByName(filterName,color);
     }
 
     /**
@@ -286,11 +333,8 @@ public class Filter_View extends StackPane {
             clearFilters.getChildren().remove(0);
             clearFilters.getChildren().remove(0);
         }
-        imodel.notifyColorsChanged();
+        imodel.notifyFiltersChanged();
     }
 
-    public void setIModel(IModel newIModel){
-        imodel = newIModel;
-    }
 
 }

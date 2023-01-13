@@ -6,6 +6,8 @@ CMPT 370 - Team Aviato
 
 package com.example.sexyscheduler;
 
+import javafx.event.Event;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.time.Month;
@@ -25,11 +27,21 @@ public class CalendarModel implements Serializable {
     public MyWeek currentWeek;
     public MyDay currentDay;
     public Hashtable<Month,String> mapMonthToString = new Hashtable<>();
+    Hashtable<String, String> filterColorByName = new Hashtable<>();
 
     public int startYear = java.time.LocalDate.now().getYear();
 
     private static final String saveFile = "src/main/resources/save.txt";
 
+    public EventBase clickedEvent;
+    public MyDay clickedDay;
+    public boolean hasDeletedEvent;
+    public boolean showEventOverview;
+    public boolean showCreateEventView;
+    public boolean showDeleteEventView;
+    public boolean showEditEventView;
+
+    public boolean addView = false;
 
     @Serial
     private static final long serialVersionUID  = 3523513519031234L;
@@ -37,22 +49,26 @@ public class CalendarModel implements Serializable {
 
     public CalendarScheduler scheduler;
 
-    public ArrayList<String> filterList;
+    public ArrayList<String> filterList = new ArrayList<>();
 
     /**
      * Creates instance of calendar class and constructs all day objects for
      * @param y : Amount of years made from current year
-     * @param filterList
      */
-    public CalendarModel(int y, ArrayList<String> filterList) {
-        this.filterList = filterList;
+    public CalendarModel(int y) {
+
+        filterColorByName.put("School","rgb(253,170,4)");
+        filterColorByName.put("Work","rgb(225,74,8)");
+        filterColorByName.put("Other","rgb(161,36,86)");
+        filterList.add("School");
+        filterList.add("Work");
+        filterList.add("Other");
         years = new MyYear[y];
 
         for (int i = 0; i < y; i++) {
             //create year objects, making all month/week/days
             years[i] = new MyYear(java.time.LocalDate.now().getYear()+i, java.time.Year.of(java.time.LocalDate.now().getYear()+i).atDay(1).getDayOfWeek().toString(), java.time.Year.of(java.time.LocalDate.now().getYear()+i).isLeap());
         }
-
         currentYear = years[0];
         currentMonth = currentYear.months[java.time.LocalDate.now().getMonthValue()-1];
         currentWeek = this.getWeekHoldingDayByNames(java.time.LocalDate.now().getYear(), currentMonth.value, LocalDate.EPOCH.getDayOfMonth());
@@ -70,8 +86,38 @@ public class CalendarModel implements Serializable {
         mapMonthToString.put(Month.NOVEMBER,"November");
         mapMonthToString.put(Month.DECEMBER,"December");
         scheduler = CalendarScheduler.getInstance(this);   //ONLY INSTANCE OF SCHEDULER FOR MODEL
+        showEventOverview = false;
+        showDeleteEventView = false;
+        showEditEventView = false;
+        showCreateEventView = false;
     }
 
+    public CalendarModel(){}
+
+
+
+
+    /**
+     * @param filterName: name of the filter
+     * @param color: the new colour for the filter
+     * updates the filter color to be the param color
+     */
+    public void setFilterColorByName(String filterName, String color){
+        if (!filterColorByName.isEmpty()) {
+            if (!filterColorByName.contains(filterName)) {
+                filterColorByName.put(filterName, color);
+            }
+        }
+        notifySubscribers();
+    }
+
+    /**
+     * @return a hastable of the filter names and their corresponding
+     * colors
+     */
+    public Hashtable<String, String> getFilterColorByName(){
+        return filterColorByName;
+    }
 
 
     /**
@@ -175,6 +221,7 @@ public class CalendarModel implements Serializable {
      */
     public MyMonth getMonthByIndices(int yearIndex, int monthIndex) {
         ModelTranslator mt = ModelTranslator.getInstance(years[yearIndex].isLeap);
+        //System.out.println(monthIndex);
         return years[yearIndex].getMonthByInt(monthIndex);
     }
 
@@ -191,6 +238,9 @@ public class CalendarModel implements Serializable {
         MyWeek[] thisMonth = years[year-startYear].getMonthByName(month).weeks;
 
         for (int i = 0; i < thisMonth.length; i++) {
+           /* if (day > 20 && i == 0) {
+                continue;
+            }*/
             if (thisMonth[i].hasDayByDateOfMonth(day)) {
                 return thisMonth[i];    //get day in month
             }
@@ -275,11 +325,91 @@ public class CalendarModel implements Serializable {
 
 
     public void createEvent() {
+        addView = !addView;
+
+        showEventOverview = false;
+        showEditEventView = false;
+        showDeleteEventView = false;
+        showCreateEventView = true;
+        notifySubscribers();
+        showCreateEventView = false;
+    }
+
+/*    public boolean editEvent(MyDay day, EventBase e) {
+        if (e instanceof AppointmentEvent) {
+             EventBase eventToEdit = day.events.get(day.events.indexOf(e));
+             eventToEdit.
+        }
+        else if (e instanceof DeadlineEvent) {
+
+        }
+    }*/
+
+    public void hideCreateEventView() {
+        showCreateEventView = false;
         notifySubscribers();
     }
+
     public void createErrorEvent(EventErrorView error) {
         error.showError();
         //updateSubscriber(error);
+    }
+
+    public void showEventOverview(EventBase event, MyDay day) {
+        clickedEvent = event;
+        clickedDay = day;
+        showEditEventView = false;
+        showDeleteEventView = false;
+        showCreateEventView = false;
+        showEventOverview = true;
+        notifySubscribers();
+    }
+
+    public void hideEventOverview() {
+        //showEditEventView = false;
+        showDeleteEventView = false;
+        showCreateEventView = false;
+        showEventOverview = false;
+        notifySubscribers();
+    }
+
+    public void showDeleteEventView() {
+        showEditEventView = false;
+        showCreateEventView = false;
+        showEventOverview = false;
+        showDeleteEventView = true;
+        notifySubscribers();
+    }
+
+    public void hideDeleteEventView() {
+        showDeleteEventView = false;
+        notifySubscribers();
+    }
+
+    public void deleteEvent() {
+        clickedDay.deleteEvent(clickedEvent);
+        showEditEventView = false;
+        showDeleteEventView = false;
+        showCreateEventView = false;
+        showEventOverview = false;
+        hasDeletedEvent = true;
+        notifySubscribers();
+        hasDeletedEvent = false;
+    }
+
+    public void showEditEventView() {
+        showDeleteEventView = false;
+        showCreateEventView = false;
+        showEventOverview = false;
+        showEditEventView = true;
+        notifySubscribers();
+    }
+
+    public void hideEditEventView() {
+        showDeleteEventView = false;
+        showCreateEventView = false;
+        showEventOverview = false;
+        showEditEventView = false;
     }
 
     public void notifySubscribers(){
@@ -322,11 +452,9 @@ public class CalendarModel implements Serializable {
             objectOutputStream.writeObject(model);
         } catch (FileNotFoundException e) {
             System.out.println("Save file not found");
-            e.printStackTrace();
         }
         catch (IOException e) {
             System.out.println("Error in saving model file");
-            e.printStackTrace();
         }
 
         model.subscribers = save;
@@ -345,21 +473,18 @@ public class CalendarModel implements Serializable {
                 model = (CalendarModel) objectInputStream.readObject();
             } catch (FileNotFoundException e) {
                 System.out.println("Error finding save file");
-                //e.printStackTrace();
                 return null;
             } catch (ClassNotFoundException e) {
                 System.out.println("Error converting save file to object");
-                //e.printStackTrace();
                 return null;
             } catch (IOException e) {
                 System.out.println("Error reading save file");
-                //e.printStackTrace();
                 return null;
             }
         } catch (Exception e) {
             return null;
         }
-
+        model.addView = false;
         return model;
     }
 
@@ -383,7 +508,7 @@ public class CalendarModel implements Serializable {
             int criticalFailures = 0;
 
 
-            CalendarModel sm  = new CalendarModel(2, new ArrayList<String>());
+            CalendarModel sm  = new CalendarModel(2);
 
             if (sm != null) {
                 testScore += 1;

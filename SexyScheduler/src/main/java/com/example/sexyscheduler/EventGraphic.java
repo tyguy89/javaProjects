@@ -3,6 +3,7 @@ package com.example.sexyscheduler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 public class EventGraphic extends HBox {
 
@@ -11,11 +12,19 @@ public class EventGraphic extends HBox {
 
     public EventGraphic(EventBase event, double width, String color){
         titleString = event.title;
-        Label name;
+        Text name;
+
+        if(event instanceof AppointmentEvent){
+            if(((AppointmentEvent) event).siblings != null){
+                name = new Text(titleString+"*");
+            }else{
+                name = new Text(titleString);
+            }
+        }else{
+            name = new Text(titleString);
+        }
 
         tag = event.tag;
-        name = new Label(titleString);
-        name.setAlignment(Pos.CENTER);
         this.getChildren().add(name);
         this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
         this.setId("eventGraphic");

@@ -17,7 +17,6 @@ public class ColorPickerView extends StackPane {
     }
 
     public void show(){
-        System.out.println(this.focusedProperty());
         if(!this.popUp.isShowing()){
             this.popUp.show();
         }else{

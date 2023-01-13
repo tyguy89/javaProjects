@@ -5,9 +5,12 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
+import javafx.scene.control.Label;
 
 import java.lang.*;
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ import java.util.Hashtable;
 public class CalendarView extends StackPane implements ModelListener, iModelListener {
     CalendarModel model;
     IModel imodel;
-    Filter_View filterView = new Filter_View();
+    Filter_View filterView;
 
     int numWeeks;
     double cellHeight, cellWidth;
@@ -36,21 +39,22 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
 
     VBox root = new VBox(5);
 
-    public CalendarView(CalendarModel model, IModel imodel){
+    public CalendarView(CalendarModel model, IModel imodel,Filter_View filterView){
         this.model = model;
         this.imodel = imodel;
         this.imodel.addSubscriber(this);
         this.model.addSubscribers(this);
 
         //initial filters
-        filterView.setIModel(imodel);
-        filterView.add_filter("School");
-        filterView.add_filter("Work");
-        filterView.add_filter("Other");
+        this.filterView = filterView;
+
         //year/month bar
         month.setText(imodel.getMonthName());
         year.setText(String.valueOf(imodel.getActualYear()));
-        dateInfo.getChildren().addAll(month,new Label(":"),year);
+        dateInfo.getChildren().addAll(month,new Label(" : "),year);
+        month.setAlignment(Pos.CENTER);
+        year.setAlignment(Pos.CENTER);
+        dateInfo.setAlignment(Pos.CENTER);
         HBox leftSpacing = new HBox();
         HBox.setHgrow(leftSpacing,Priority.SOMETIMES);
         HBox rightSpacing = new HBox();
@@ -61,6 +65,11 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
         }
         initializeMonth();
         root.setAlignment(Pos.TOP_CENTER);
+
+        imodel.week = model.getWeekHoldingDayByNames(imodel.getActualYear(), imodel.getMonthName(), imodel.day);
+        week[imodel.week.value].setStyle("-fx-background-color:rgb(184,210,143)");
+        imodel.weekSelected = true;
+
 
         Rectangle2D ll = Screen.getPrimary().getBounds();
         this.setMaxSize(ll.getWidth(),ll.getHeight());
@@ -75,7 +84,7 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
         this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
 
         calendar.setId("calendar");
-        monthBar.setId("cal-top");
+        monthBar.setId("top-containers");
         nextMonth.setId("right-arrow");
         prevMonth.setId("left-arrow");
         filterView.setId("cal-bot");
@@ -100,85 +109,85 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
      */
     public void changeHeight(Number newHeight){
         cellHeight = ((newHeight.doubleValue())/numWeeks);
-        calendar.setMaxHeight((cellHeight*numWeeks)- (filterView.getHeight()*2));
+        calendar.setMaxHeight((cellHeight*numWeeks)- (filterView.getHeight()));
         for (int i = 0; i < numWeeks; i++) {
             week[i].setPrefHeight(cellHeight-(filterView.getHeight()/numWeeks - month.getHeight()/numWeeks));
         }
     }
 
-    /**
+/*    *//**
      * @param event: mouse event
      * handels what to do when a mouse press happens on the calendar
      */
     public void mouseClicked(MouseEvent event){
         if(event.getTarget().getClass().equals(DayGraphic.class)){
-            if(event.getButton() == MouseButton.PRIMARY) {
-                imodel.weekSelected = false;
-                this.selectDay(event);
+            selectDay(((DayGraphic)event.getTarget()),event);
+        }
+        if(event.getTarget().getClass().equals(EventGraphic.class)){
+            selectDay(((DayGraphic)((EventGraphic)event.getTarget()).getParent()),event);
+        }
+
+        if(event.getTarget().getClass().equals(Text.class)){
+            if(((Text)event.getTarget()).getParent().getClass().equals(EventGraphic.class)){
+                selectDay((DayGraphic) ((Text)event.getTarget()).getParent().getParent(),event);
             }else{
-                imodel.weekSelected = true;
-                this.selectDay(event);
+                selectDay((DayGraphic) ((Text)event.getTarget()).getParent(),event);
             }
         }
 
-/*        if(event.getTarget().getClass().equals(EventGraphic.class)){
-            imodel.setSelectedEvent(((EventGraphic)event.getTarget()).event);
-        }*/
+
+
     }
 
     /**
-     * @param event: mouse clicked event
      * sets the background colour of the day and week to
      * corresponding to where the mouse is clicked
      */
-    public void selectDay(MouseEvent event){
-        if (imodel.getDaySelected() == null) {
-            imodel.setDaySelected((DayGraphic) event.getTarget());
-            imodel.getDaySelected().getParent().setStyle("-fx-background-color:rgb(114,229,212)");
-            for(int day = 0; day < 7; day++){
-                ((HBox)imodel.getDaySelected().getParent()).getChildren().get(day).setStyle("-fx-background-color:transparent");
-            }
-            if(imodel.week != null){
-                if (imodel.week.value == 0) {
-                    for (int day = 0; day < 7; day++) {
-                        if (Integer.parseInt(((DayGraphic) (this.week[0].getChildren().get(day))).day.getText()) > 7) {
-                            (this.week[0].getChildren().get(day)).setStyle("-fx-background-color:rgb(220,220,220)");
-                        }
+    public void selectDay(DayGraphic dayClicked,MouseEvent event){
+        if(imodel.week != null){
+            week[imodel.week.value].setStyle("-fx-background-color:transparent");
+            if(imodel.week.value == 0){
+                for(int day = 0; day < 7; day ++){
+                    if((Integer.parseInt(((DayGraphic)week[0].getChildren().get(day)).day.getText())) > 7) {
+                        week[0].getChildren().get(day).setStyle("-fx-background-color:rgba(200,200,200,0.5);");
                     }
                 }
             }
-            imodel.getDaySelected().setSelected();
-        } else {
+        }
+
+        if(imodel.getDaySelected() != null) {
             imodel.getDaySelected().unselect();
             imodel.getDaySelected().getParent().setStyle("-fx-background-color:transparent");
-            for(int day = 0; day < 7; day++){
-                ((HBox)imodel.getDaySelected().getParent()).getChildren().get(day).setStyle("-fx-background-color:transparent");
-            }
-
-            for (int day = 0; day < 7; day++) {
-                if (Integer.parseInt(((DayGraphic) (this.week[0].getChildren().get(day))).day.getText()) > 7) {
-                    (this.week[0].getChildren().get(day)).setStyle("-fx-background-color:rgb(220,220,220)");
+            if (week[0].equals(imodel.getDaySelected().getParent())) {
+                for (int day = 0; day < 7; day++) {
+                    if ((Integer.parseInt(((DayGraphic) week[0].getChildren().get(day)).day.getText())) > 7) {
+                        week[0].getChildren().get(day).setStyle("-fx-background-color:rgba(200,200,200,0.5);");
+                    }
                 }
             }
+        }
 
-            imodel.setDaySelected((DayGraphic) event.getTarget());
-            if(!imodel.weekSelected) {
-                ((DayGraphic) event.getTarget()).setSelected();
-            }else{
-                imodel.getDaySelected().unselect();
-            }
-            imodel.week = model.getWeekHoldingDayByNames(imodel.getActualYear(), imodel.getMonthName(),Integer.parseInt(imodel.getDaySelected().day.getText()));
-            if(imodel.week.value == 0){
-                for(int day = 0; day < 7; day++){
-                    this.week[0].getChildren().get(day).setStyle("-fx-background-color:transparent");
-                }
-            }
-            imodel.getDaySelected().getParent().setStyle("-fx-background-color:rgb(114,229,212);");
-            if(!imodel.weekSelected) {
-                imodel.getDaySelected().setSelected();
-            }
+        if(event.getButton() == MouseButton.PRIMARY){
+            imodel.week = null;
+            imodel.weekSelected = false;
+            imodel.setDaySelected(dayClicked);
+            imodel.getDaySelected().setSelected();
+        }else{
+            imodel.weekSelected = true;
+            imodel.week = model.getWeekHoldingDayByNames(imodel.getActualYear(),imodel.getMonthName(),Integer.parseInt(dayClicked.day.getText()));
+            imodel.setDaySelected(null);
 
         }
+        if(week[0].equals(dayClicked.getParent())) {
+            for (int day = 0; day < 7; day++) {
+                week[0].getChildren().get(day).setStyle("-fx-background-color:transparent;");
+            }
+        }
+        if(imodel.getDaySelected() != null){
+            imodel.getDaySelected().setSelected();
+        }
+        dayClicked.getParent().setStyle("-fx-background-color:rgb(184,210,143)");
+
     }
 
     /**
@@ -187,24 +196,12 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
     public void filtersChanged() {
         for (int week = 0; week < numWeeks; week++) {
             for (int day = 0; day < 7; day++) {
-                DayGraphic dayGraphic = (DayGraphic)this.week[week].getChildren().get(day);
-                dayGraphic.changeFilters(imodel.getSelectedFilters());
+                ((DayGraphic)this.week[week].getChildren().get(day)).changeFilters(imodel.getSelectedFilters());
             }
         }
     }
 
-    /**
-     * changes the colors of the events on the calendar based on the
-     * filters selected
-     */
-    public void colorsChanged() {
-        for (int week = 0; week < numWeeks; week++) {
-            for (int day = 0; day < 7; day++) {
-                DayGraphic dayGraphic = (DayGraphic)this.week[week].getChildren().get(day);
-                dayGraphic.changeFilterColor(imodel.getFilterColorByName());
-            }
-        }
-    }
+
 
     /**
      * since we are only storing ta most 35 day graphics when the month
@@ -214,7 +211,7 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
         this.calendar.getChildren().clear();
         this.calendar.getChildren().add(dayNames);
         ArrayList<MyDay> daysInMonth = model.getDaysInMonthOnly(imodel.year, imodel.month);
-        Hashtable<String,String> color = imodel.getFilterColorByName();
+        Hashtable<String,String> color = model.getFilterColorByName();
         if(imodel.getDaySelected() != null) {
             imodel.getDaySelected().getParent().setStyle("-fx-background-color:transparent");
         }
@@ -230,7 +227,7 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
                     ((DayGraphic) (this.week[week].getChildren().get(day))).changeFilters(imodel.getSelectedFilters());
                 }
                 if((week == 0) && (Integer.parseInt(((DayGraphic) (this.week[week].getChildren().get(day))).day.getText()) >7)){
-                    (this.week[week].getChildren().get(day)).setStyle("-fx-background-color:rgb(220,220,220)");
+                    (this.week[week].getChildren().get(day)).setStyle("-fx-background-color:rgba(200,200,200,0.5)");
                 }
             }
             this.calendar.getChildren().add(this.week[week]);
@@ -253,21 +250,7 @@ public class CalendarView extends StackPane implements ModelListener, iModelList
      * if the model changes update the events on the calendar
      */
     public void modelChanged(){
-        ArrayList<MyDay> daysInMonth = model.getDaysInMonthOnly(imodel.year, imodel.month);
-        Hashtable<String,String> color = imodel.getFilterColorByName();
-        month.setText(imodel.getMonthName());
-        year.setText(""+imodel.getActualYear());
-        numWeeks = daysInMonth.size()/7;
-        for (int week = 0; week < numWeeks; week++) {
-            for (int day = 0; day < 7; day++) {
-                for(EventBase event: daysInMonth.get((week*7)+day).events){
-                    ((DayGraphic)(this.week[week].getChildren().get(day))).addEvent(event,cellWidth,color.get(event.tag));
-                    ((DayGraphic)(this.week[week].getChildren().get(day))).changeFilters(imodel.getSelectedFilters());
-                }
-            }
-        }
-        this.changeWidth(this.getWidth());
-        this.changeHeight(this.getHeight());
+        initializeMonth();
     }
 
     public void iModelChanged(){}

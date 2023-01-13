@@ -31,33 +31,34 @@ public class MyMonth implements Serializable {
         containerYear = ct;
         mt = ModelTranslator.getInstance(leapYear);
         this.value = value;
-        this.value = value;
         this.equivalentValue = equivalentValue;
 
-
-        if (equivalentValue == 0) {
+        //Weeks for a month are defined as All the weeks from sunday-saturday where the first day of the month is included,
+        //and no days of the next month are in the month object. Days from the month before may be in first week depending on start day
+        if (equivalentValue == 0) { //January
             if (mt.dayOfWeekIntByName.get(startDay) >= 4) {
-                weeks = new MyWeek[5];
+                weeks = new MyWeek[5];  //5 weeks if it is past wednesday
                 fillWeeks(weeks, startDay, this, leapYear);
             }
 
             else {
-                weeks = new MyWeek[4];
+                weeks = new MyWeek[4]; //4 weeks only
                 fillWeeks(weeks, startDay, this, leapYear);
             }
         }
 
 
-        else if (equivalentValue == 1) {
+        else if (equivalentValue == 1) {    //Always 4 weeks for february
             weeks = new MyWeek[4];
             fillWeeks(weeks, startDay, this, leapYear);
         }
 
         else {
+            //Make as many weeks as can
             MyWeek[] containerW = new MyWeek[4];
             this.weeks = containerW;
             fillWeeks(containerW, startDay, this, leapYear);
-            if (containerW[3].days[6].value + 6 < mt.daysInMonthByName.get(this.value)) {
+            if (containerW[3].days[6].value + 6 < ModelTranslator.daysInMonthByName.get(this.value)) {
                 MyWeek[] returnWeeks = new MyWeek[5];
                 for (int i = 0; i < 4; i++) {
                     returnWeeks[i] = containerW[i];
@@ -108,3 +109,4 @@ public class MyMonth implements Serializable {
 
     }
 }
+

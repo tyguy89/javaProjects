@@ -6,6 +6,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class WeekEventView extends ScrollPane implements iModelListener, ModelListener {
 
@@ -32,7 +33,6 @@ public class WeekEventView extends ScrollPane implements iModelListener, ModelLi
         root.setMinSize(200,500);
 
         weekOverview = new VBox(5);
-        weekOverview.setMaxSize(200,200);
 
         VBox day1 = new VBox(5);
         day1.setMinHeight(120);
@@ -77,10 +77,7 @@ public class WeekEventView extends ScrollPane implements iModelListener, ModelLi
         this.setContent(root);
         this.setHbarPolicy(ScrollBarPolicy.NEVER);
         this.setVbarPolicy(ScrollBarPolicy.ALWAYS);
-        this.setMinSize(Double.MIN_VALUE, Double.MIN_VALUE);
-        this.setPrefSize(300, 700);
-        this.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        this.setId("cal-bot");
+        this.setId("event-views");
     }
 
     public void setController(Controller controller) {
@@ -90,9 +87,9 @@ public class WeekEventView extends ScrollPane implements iModelListener, ModelLi
     /**
      * Links an event in the view, when clicked, to EventOverview.
      */
-/*    private void linkControllerEvents(Label eventLabel, Event event, MyDay day) {
-        eventLabel.setOnMouseClicked(e -> controller.handleEventClicked(event, day));
-    }*/
+    private void linkControllerEvents(WeekEventGraphic graphic, EventBase event, MyDay day) {
+        graphic.setOnMouseClicked(e -> controller.handleEventClicked(event, day));
+    }
 
     public void setModel(CalendarModel model) {
         this.model = model;
@@ -100,10 +97,12 @@ public class WeekEventView extends ScrollPane implements iModelListener, ModelLi
 
     public void setiModel(IModel iModel) {
         this.iModel = iModel;
+        iModelChanged();
     }
 
     @Override
     public void iModelChanged() {
+        Hashtable<String,String> colors = model.getFilterColorByName();
         selectedWeek = iModel.week;
         MyDay day;
         weekOverview.getChildren().clear();
@@ -116,16 +115,11 @@ public class WeekEventView extends ScrollPane implements iModelListener, ModelLi
             for (int i = 0; i < vBoxes.length; i++) {
                 day = iModel.week.days[i];
                 for (EventBase event : day.events) {
-                    if(event instanceof AppointmentEvent) {
-                        Label newLabel = new Label(event.title + ", " + ((AppointmentEvent)event).start + " - " + ((AppointmentEvent) event).end);
-                        //this.linkControllerEvents(newLabel, event, day);
-                        vBoxes[i].getChildren().add(newLabel);
-                    }else if (event instanceof DeadlineEvent){
-                        Label newLabel = new Label(event.title + ", " + ((DeadlineEvent) event).time);
-                        //this.linkControllerEvents(newLabel, event, day);
-                        vBoxes[i].getChildren().add(newLabel);
+                    if(iModel.selectedFilters.contains(event.tag)) {
+                        WeekEventGraphic graphic = new WeekEventGraphic(event, colors.get(event.tag));
+                        this.linkControllerEvents(graphic, event, day);
+                        vBoxes[i].getChildren().add(graphic);
                     }
-
                 }
             }
        }
@@ -139,40 +133,38 @@ public class WeekEventView extends ScrollPane implements iModelListener, ModelLi
 
     @Override
     public void filtersChanged() {
-
+        iModelChanged();
     }
 
-    @Override
-    public void colorsChanged() {
-
-    }
 
 
     @Override
     public void modelChanged() {
-/*        if (model.hasDeletedEvent) {
-            System.out.println("model.hasdeletedEvent condition is true in weekeventview");
+        Hashtable<String,String> colors = model.getFilterColorByName();
+        if (model.hasDeletedEvent) {
             weekOverview.getChildren().clear();
             for (int i = 0; i < labels.length; i = i + 1) {
                 vBoxes[i].getChildren().clear();
                 vBoxes[i].getChildren().add(labels[i]);
                 weekOverview.getChildren().add(vBoxes[i]);
-            }*/
+            }
             if (selectedWeek != null) {
                 for (int i = 0; i < vBoxes.length; i++) {
                     MyDay day = selectedWeek.days[i];
                     for (EventBase event : day.events) {
-                        if(event instanceof AppointmentEvent) {
-                            Label newLabel = new Label(event.title + ", " + ((AppointmentEvent)event).start + " - " + ((AppointmentEvent) event).end);
-                            //this.linkControllerEvents(newLabel, event, day);
-                            vBoxes[i].getChildren().add(newLabel);
-                        }else if (event instanceof DeadlineEvent){
-                            Label newLabel = new Label(event.title + ", " + ((DeadlineEvent) event).time);
-                            //this.linkControllerEvents(newLabel, event, day);
-                            vBoxes[i].getChildren().add(newLabel);
+                        if(iModel.selectedFilters.contains(event.tag)) {
+                            WeekEventGraphic graphic = new WeekEventGraphic(event, colors.get(event.tag));
+                            this.linkControllerEvents(graphic, event, day);
+                            vBoxes[i].getChildren().add(graphic);
                         }
                     }
                 }
             }
+        }
+    }
+
+    public void changeHeight(double newVal){
+        weekOverview.setPrefHeight(newVal);
+        this.setPrefHeight(newVal);
     }
 }

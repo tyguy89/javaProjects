@@ -27,7 +27,7 @@ public class EventTabsView extends StackPane {
         BorderPane root = new BorderPane();
 
         this.tabPane = new TabPane();
-        this.eventTab = new Tab("Event", addTab);
+        this.eventTab = new Tab("Appointment Event", addTab);
         this.eventTab.setId("Event");
         this.eventTab.setClosable(false);
         this.tabPane.getTabs().add(this.eventTab);
@@ -48,6 +48,12 @@ public class EventTabsView extends StackPane {
         deadlineEventTab.setId("Deadline");
         deadlineEventTab.setClosable(false);
         this.tabPane.getTabs().add(deadlineEventTab);
+        this.getStylesheets().add(this.getClass().getResource("styles.css").toExternalForm());
+        tabPane.setId("cust-background");
+        this.eventTab.setId("tab");
+        addAutoEventTab.setId("tab");
+        repeatEventTab.setId("tab");
+        deadlineEventTab.setId("tab");
 
         root.setCenter(this.tabPane);
         this.getChildren().add(root);
@@ -59,6 +65,11 @@ public class EventTabsView extends StackPane {
         }
         else if (selectedTab.equals("Auto")) {
             this.addAutoTab.clearFields();
+        }else if (selectedTab.equals("Repeat")) {
+            this.repeatTab.clearFields();
+        }
+        else if (selectedTab.equals("Deadline")) {
+            this.deadlineTab.clearFields();
         }
     }
 
