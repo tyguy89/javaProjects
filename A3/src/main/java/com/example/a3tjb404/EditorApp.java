@@ -1,8 +1,5 @@
 /*
-tjb404
-11294509
 Tyler Boechler
-CMPT 381
  */
 
 package com.example.a3tjb404;
@@ -22,7 +19,7 @@ public class EditorApp extends Application {
         //Passing scene down when not null
         Scene scene = new Scene(main);
         main.setScene(scene);
-        stage.setTitle("A3");
+        stage.setTitle("State Diagrams");
         stage.setScene(scene);
         stage.show();
     }

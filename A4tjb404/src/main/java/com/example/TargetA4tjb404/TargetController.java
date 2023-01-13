@@ -1,7 +1,5 @@
 /*
 Tyler Boechler
-tjb404
-11294509
  */
 
 package com.example.TargetA4tjb404;
@@ -42,6 +40,7 @@ public class TargetController {
     }
 
     public void handlePressed(MouseEvent event) {
+        System.out.println(currentState.toString());
         switch (currentState) {
             case READY -> {
                 if (model.hitTarget(event.getX(), event.getY())) {
@@ -80,6 +79,7 @@ public class TargetController {
                         ArrayList<Target> tlist = new ArrayList<Target>();
                         Target t = model.whichHit(event.getX(), event.getY());
                         AtomicBoolean flag = new AtomicBoolean(true);
+
                         iModel.selected.forEach(tar -> {
                             if (tar.id == t.id) {
                                 flag.set(false);
@@ -100,11 +100,19 @@ public class TargetController {
                     }
 
                 }
+
                 else {
                     if (keyState == KeyState.SHIFTISDOWN) {
                         dX = event.getX();
                         dY = event.getY();
                         currentState = State.PREPARE_CREATE;
+                        ArrayList<Target> targets = new ArrayList<>();
+
+                        targets.add(model.addTarget(dX, dY));
+                        //if (!(model.getTargets().size() == 1)) {
+                        iModel.addUndo((ArrayList<Target>) model.getTargets(), false);
+                        //}
+                        currentState = State.READY;
                     }
 
                     else if (keyState == KeyState.NONE) {
@@ -291,13 +299,7 @@ public class TargetController {
     public void handleReleased(MouseEvent event) {
         switch (currentState) {
             case PREPARE_CREATE -> {
-                ArrayList<Target> targets = new ArrayList<>();
 
-                targets.add(model.addTarget(dX, dY));
-                //if (!(model.getTargets().size() == 1)) {
-                iModel.addUndo((ArrayList<Target>) model.getTargets(), false);
-                //}
-                currentState = State.READY;
             }
             case DRAGGING -> {
                 //iModel.unselect();

@@ -2,8 +2,8 @@
   <artifact type="jar" name="SexyScheduler:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/SexyScheduler_jar</output-path>
     <root id="archive" name="SexyScheduler.jar">
-      <element id="module-output" name="SexyScheduler" />
-      <element id="extracted-dir" path="$USER_HOME$/Desktop/370/controlsfx-11.1.2.jar" path-in-jar="/" />
+      <element id="module-output" name="Scheduler" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../370/controlsfx-11.1.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/17-ea+11/javafx-base-17-ea+11.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-fxml/17-ea+11/javafx-fxml-17-ea+11.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-fxml/17-ea+11/javafx-fxml-17-ea+11-win.jar" path-in-jar="/" />
