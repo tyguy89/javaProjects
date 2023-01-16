@@ -6,6 +6,9 @@ package com.example.TargetA4tjb404;
 
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Controller class for trainer
+ */
 public class TrainerController {
 
     TargetModel targetModel;
@@ -28,10 +31,11 @@ public class TrainerController {
                 iModel.trialTimes.add((int) (System.currentTimeMillis()) - iModel.startTime);
 
                 iModel.nextTrainerTarget(t);
-
+                //Move forwards target
                 iModel.addGraphPoint(iModel.difficulty.get(iModel.currentTarget-2), iModel.trialTimes.get(iModel.trialTimes.size()-1));
 
             } else {
+                //Start target
                 Target t = targetModel.whichHit(event.getX(), event.getY());
                 iModel.nextTrainerTarget(t);
             }

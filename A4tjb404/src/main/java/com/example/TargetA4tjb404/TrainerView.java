@@ -11,21 +11,22 @@ import javafx.scene.chart.ScatterChart;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+/**
+ * Stackpane view class for target trainer mode
+ */
 public class TrainerView extends StackPane implements IModelListener {
 
     GraphicsContext gc;
     Canvas myCanvas;
-
     public TargetModel model;
     public InteractionModel iModel;
-
     final NumberAxis xAxis, yAxis;
-
     final ScatterChart<Number,Number> sc;
-
-
     public boolean graphMode = false;
 
+    /**
+     * Constructor, creates graphics and graph components
+     */
     public TrainerView() {
         myCanvas = new Canvas(800,800);
         gc = myCanvas.getGraphicsContext2D();
@@ -60,6 +61,9 @@ public class TrainerView extends StackPane implements IModelListener {
 
     }
 
+    /**
+     * Reset proper variables
+     */
     public void restart() {
         iModel.targetsTrainer = model.getTargets();
         iModel.totalTargets = iModel.targetsTrainer.size();
@@ -68,7 +72,6 @@ public class TrainerView extends StackPane implements IModelListener {
 
         this.getChildren().clear();
         this.getChildren().add(myCanvas);
-
 
         iModel.series.getData().clear();
         sc.getData().clear();
@@ -80,13 +83,16 @@ public class TrainerView extends StackPane implements IModelListener {
                 //System.out.println(prev.x + "G" +  t.x);
                 iModel.difficulty.add(((Math.log(2*(Math.sqrt(Math.pow(prev.x-t.x, 2) + Math.pow(prev.y-t.y, 2)))/(t.radius+prev.radius))) / Math.log(2)));
                 //System.out.println(iModel.difficulty.get(iModel.difficulty.size()-1));
-            }
+            } //Create graph points
 
         });
 
         draw();
     }
 
+    /**
+     * Draw the scene
+     */
     private void draw() {
         if (!graphMode) {
             gc.clearRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
@@ -115,6 +121,5 @@ public class TrainerView extends StackPane implements IModelListener {
 
     private void graph() {
         this.getChildren().clear();
-
     }
 }
